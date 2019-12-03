@@ -13,7 +13,7 @@ import Solution
 
 part1 :: Solution Program Int
 part1 = Solution {
-    name        = "Day 1 Part 1",
+    name        = "Day 2 Part 1",
     parser      = inputParser,
     solver      = part1Solver,
     examples    = [],
@@ -61,8 +61,29 @@ performNumericOp op = do
 
 -- Part 2
 
+part2 :: Solution Program Int
+part2 = Solution {
+    name        = "Day 2 Part 2",
+    parser      = inputParser,
+    solver      = part2Solver,
+    examples    = [],
+    inputFile   = "./data/days/Day2.in"
+}
+
 part2Solver :: Program -> Int
-part2Solver = undefined
+part2Solver p = uncurry calcFinalAnswer $ searchParams p 19690720 0 99
+
+calcFinalAnswer :: Int -> Int -> Int
+calcFinalAnswer noun verb = 100 * noun + verb
+
+setProgramParams :: Program -> Int -> Int -> Program
+setProgramParams (Program xs) noun verb = Program $ (replaceNth noun 1) $ replaceNth verb 2 xs
+
+searchParams :: Program -> Int -> Int -> Int -> (Int, Int)
+searchParams p target paramLow paramHigh = getRes $ head $ dropWhile (\(_, _, r) -> r /= target) $ fmap go possibleParams
+    where possibleParams = (,) <$> [paramLow..paramHigh] <*> [paramLow..paramHigh]
+          go             = \(n, v) -> (n, v, programResult $ setProgramParams p n v)
+          getRes         = \(n, v, _) -> (n, v)
 
 -- Common
 
