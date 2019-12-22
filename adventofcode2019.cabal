@@ -60,6 +60,7 @@ executable adventofcode2019
   build-depends:       base >=4.9 && <4.10
                     ,  parsec
                     ,  parsec-numbers
+                    ,  mtl
   
   -- Directories containing source files.
   hs-source-dirs:      src

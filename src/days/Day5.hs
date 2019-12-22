@@ -54,8 +54,8 @@ stepProgram = do
 performNumericOp :: (Int -> Int -> Int) -> State RunningProgram ()
 performNumericOp op = do
     pc <- getPC
-    lVal <- getInstruction (pc + 1) >>= getInstruction
-    rVal <- getInstruction (pc + 2) >>= getInstruction
+    lVal <- getOperand 0
+    rVal <- getOperand 1
     resPos <- getInstruction $ pc + 3
     updateProgram (lVal `op` rVal) resPos
     stepPC 4
@@ -128,13 +128,16 @@ getOperand :: Int -> State RunningProgram Int
 getOperand paramNumber = do
     pc <- getPC
     opCode <- getInstruction pc
-    rawOperand <- getInstruction $ pc + paramNumber
+    rawOperand <- getInstruction $ pc + paramNumber + 1
     -- 99 is the only opcode which is two digits and it has no parameters
-    if opCode % (10^(paramNumber + 1)) - (opCode % (10^paramNumber)) == 0 then 
+    if getParamMode opCode paramNumber == 0 then 
         -- Position mode
-        undefined
+        getInstruction rawOperand
     else
-        undefined
+        -- Immediate mode
+        return rawOperand
+    where 
+        getParamMode o n = o `mod` (10^(n + 1)) - (o `mod` (10^n))
 
 -- Datatype
 
